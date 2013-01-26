@@ -1,0 +1,42 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <h1>App</h1>
+    <div class="screen">Loading...</div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script>
+
+
+see https://github.com/csusbdt/fbapp/blob/master/pages/home.html
+
+
+      (function() {
+        var n = -1;  // -1 means no screen transition in progress
+        a.appId = 'FB_APP_ID';
+        a.screen = function(screenFile, speed) {
+          if (n !== -1) return;  // don't allow more than one transition at a time
+          n = 2;
+          if (speed === undefined) speed = 300;
+          var $div = $('<div></div>').hide(); 
+          $('.screen').after($div);
+          function done() {
+            if (--n !== 0) return;
+            $('.screen').remove();
+            $div.addClass('screen');
+            $div.fadeIn(speed, function() { n = -1; });
+          }
+          $div.load(screenFile, done);
+          $('.screen').fadeOut(speed, done);
+        };
+      }());
+      if (a.m === undefined) {
+        a.screen('login-0.html');
+      } else {
+        a.creds = JSON.parse(window.cookie['creds']);
+        a.screen('title-0.html');
+      }
+    </script>
+  </body>
+</html>
+
