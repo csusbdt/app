@@ -2,6 +2,7 @@ var http        = require('http');
 var url         = require('url');
 var app_http    = require('./app_http');
 var req_root    = require('./req_root');
+var req_app     = require('./req_app');
 var req_mem     = require('./req_mem');
 var req_file    = require('./req_file');
 
