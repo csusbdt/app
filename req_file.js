@@ -6,21 +6,29 @@ var app_http = require('./app_http');
 
 // This code returns "not found" when '..' appears in the url.
 
-var publicDir = 'public',
-    files = [],
-    extmap = {
-      'png'  : { type: 'image/png',              gzip: true },
-      'js'   : { type: 'application/javascript', gzip: true },
-      'css'  : { type: 'text/css',               gzip: true },
-      'ico'  : { type: 'image/x-icon',           gzip: true },
-      'html' : { type: 'text/html',              gzip: true },
-      'ogg'  : { type: 'audio/ogg',              gzip: false },
-      'mp3'  : { type: 'audio/mp3',              gzip: false }
-    };
+var extmap = {
+  'png'  : { type: 'image/png',              gzip: true },
+  'js'   : { type: 'application/javascript', gzip: true },
+  'css'  : { type: 'text/css',               gzip: true },
+  'ico'  : { type: 'image/x-icon',           gzip: true },
+  'html' : { type: 'text/html',              gzip: true },
+  'ogg'  : { type: 'audio/ogg',              gzip: false },
+  'mp3'  : { type: 'audio/mp3',              gzip: false }
+};
+
+function FileRequestHandler(_publicDir) {
+{
+  this.publicDir = _publicDir;
+  this.files = [];
+}
+
+exports.create = function(publicDir) {
+  return new FileRequestHandler(publicDir);
+}
 
 // Insert file into files array.
 // Throw exception if file already in array.
-function insert(file) {
+function insert(files, file) {
   // Keep files ordered by name so we can use binary search when servicing requests.
   files.push(null);
   var i = files.length - 1;
@@ -33,7 +41,7 @@ function insert(file) {
 }
 
 // Return file or null.  Uses binary search.
-function find(filename) {
+function find(files, filename) {
   // Locate file using binary search.
   var s = 0, 
       e = files.length - 1,
@@ -47,8 +55,8 @@ function find(filename) {
   return null;
 }
 
-exports.handle = function(req, res) {
-  var file = find(url.parse(req.url).pathname);
+FileRequestHandler.prototype.handle = function(req, res) {
+  var file = find(this.files, url.parse(req.url).pathname);
   if (file === null) {
     return app_http.replyNotFound(res);
   }
@@ -106,18 +114,18 @@ exports.handle = function(req, res) {
     console.log('memfile bytes, compressed:   ' + Math.ceil(compressed / 1024 / 1024) + ' MB');
   }
 
-  exports.init = function(cb) {
+  FileRequestHandler.prototype.init = function(cb) {
     callback = cb;
-    readDir(publicDir);
+    readDir(this.publicDir, this.files);
   };
   
   // Store contents of files in dir in the files array.
-  function readDir(dir) {
+  function readDir(dir, files) {
     start();
     fs.readdir(dir, function(err, filenames) {
       if (err) throw err;
       for (var i = 0; i < filenames.length; ++i) {
-        readFile(dir + '/' + filenames[i]);
+        readFile(files, dir + '/' + filenames[i]);
       }
       end();
     });
@@ -134,14 +142,14 @@ exports.handle = function(req, res) {
     return false;
   }
 
-  function readFile(filename) {
+  function readFile(files, filename) {
     if (ignore(filename)) return;
     start();
     fs.stat(filename, function(err, stats) {
       if (stats.isDirectory()) {
-        readDir(filename);
+        readDir(files, filename);
       } else if (stats.isFile()) {
-        readFile2(filename);
+        readFile2(files, filename);
       } else {
         throw new Error(filename + ' is not a file and not a directory.');
       }
@@ -149,7 +157,7 @@ exports.handle = function(req, res) {
     });
   }
 
-  function readFile2(filename) {
+  function readFile2(files, filename) {
     var ext = getExt(filename);
     start();
     fs.readFile(filename, function (err, data) {
@@ -160,7 +168,7 @@ exports.handle = function(req, res) {
         data: data,
         etag: app_http.etag(data)
       };
-      insert(file);
+      insert(files, file);
       if (ext.gzip === false) return end();
       start();
       zlib.gzip(file.data, function(err, result) {
