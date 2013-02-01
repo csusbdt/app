@@ -9,10 +9,10 @@ var req_rootdir  = require('./req_file').create('public_root');
 
 var verpath  = '/' + process.env.APP_VER;
 
-exports.init = function() {
+exports.init = function(cb) {
   var n = 2;
   function done() {
-    if (--n === 0) router.start();
+    if (--n === 0) cb();
   }
   req_verdir  .init(done);
   req_rootdir .init(done);
