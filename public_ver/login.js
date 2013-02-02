@@ -3,8 +3,7 @@ $(function() {
 
   var $loginBtn = $('<button id="login-btn">Facebook Login</button>');
   
-  $loginBtn.click(function());
+  $loginBtn.click(a.fbLogin);
 
-  var $loginBtn = $('<button id="login-btn">Facebook Login</button><script>$("#login-btn").click(function() {a.fbLogin();});</script>');
   a.doneScreen($loginBtn);
 });
