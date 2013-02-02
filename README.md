@@ -23,8 +23,8 @@ Developer Setup
 
 ## Fork the repo
 
-Maybe the easiest way to work is for each developer to fork the app project 
-and then clone the forked repository into their local system.  
+Maybe the easiest way to work is for each developer to fork the app project
+and then clone the forked repository into their local system.
 Then the release manager can merge from the forked repositories.
 
 I have not tested this approach.
