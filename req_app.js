@@ -8,7 +8,7 @@ var plainHtml, gzippedHtml, etag;
 exports.init = function(cb) {
   fs.readFile('app.html', 'utf8', function(err, file) {
     if (err) throw err;
-    plainHtml = new Buffer(file.replace('FB_APP_ID', process.env.FB_APP_ID), 'utf8');
+    plainHtml = new Buffer(file.replace(/FB_APP_ID/g, process.env.FB_APP_ID), 'utf8');
     etag = app_http.etag(plainHtml);
     zlib.gzip(plainHtml, function(err, result) {
       if (err) throw err;
