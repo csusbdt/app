@@ -1,5 +1,5 @@
-var model         = require('./model');
-var router        = require('./router');
+var model    = require('./model');
+var router   = require('./router');
 
 // TODO: minify js and css as part of deployment process.
 // IDEA: minify at startup rather than as a build step.

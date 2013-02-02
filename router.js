@@ -4,10 +4,12 @@ var app_http     = require('./app_http');
 var req_root     = require('./req_root');
 var req_mem      = require('./req_mem');
 var req_app      = require('./req_app');
-var req_verdir   = require('./req_file').create('public_ver');
-var req_rootdir  = require('./req_file').create('public_root');
+var req_file     = require('./req_file');
 
-var verpath  = '/' + process.env.APP_VER;
+var req_verdir   = req_file.create('public_ver');
+var req_rootdir  = req_file.create('public_root');
+
+var verpath  = '/' + process.env.APP_VER + '/';
 
 exports.init = function(cb) {
   var n = 2;
@@ -20,11 +22,11 @@ exports.init = function(cb) {
 
 function route(req, res) {
   var pathname = url.parse(req.url).pathname;
-  if      (pathname                           === '/')     req_root    .handle(req, res)
-  else if (pathname                           === verpath) app_http    .redirect(res, verpath + '/')
-  else if (pathname.substr(0, verpath.length) === verpath) req_verdir  .handle(req, res)
-  else if (pathname                           === '/mem')  req_mem     .handle(req, res);
-  else                                                     req_rootdir .handle(req, res);
+  if      (pathname                        === '/')      req_root    .handle(req, res)
+  else if (pathname                        === verpath)  req_app     .handle(req, res)
+  else if (pathname.substr(verpath.length) === verpath)  req_verdir  .handle(req, res)
+  else if (pathname                        === '/mem')   req_mem     .handle(req, res);
+  else                                                   req_rootdir .handle(req, res);
 }
 
 function requestHandler(req, res) {
@@ -39,10 +41,9 @@ function requestHandler(req, res) {
   }
 }
 
-exports.start = function(_version) {
-  version = _version;
+exports.start = function() {
   http.createServer(requestHandler).listen(process.env.PORT, function(err) {
-    if (err) console.log(err);
+    if (err) throw err;
     else console.log("listening on " + process.env.PORT);
   });
 };
