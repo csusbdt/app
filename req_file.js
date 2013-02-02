@@ -16,14 +16,16 @@ var extmap = {
   'mp3'  : { type: 'audio/mp3',              gzip: false }
 };
 
-function FileRequestHandler(_publicDir) {
-{
-  this.publicDir = _publicDir;
+// len = the number of characters to skip over 
+// to extract the filename from request url.
+function FileRequestHandler(dir, len) {
+  this.publicDir = dir;
+  this.len = len;
   this.files = [];
 }
 
-exports.create = function(publicDir) {
-  return new FileRequestHandler(publicDir);
+exports.create = function(publicDir, len) {
+  return new FileRequestHandler(publicDir, len);
 }
 
 // Insert file into files array.
@@ -56,7 +58,9 @@ function find(files, filename) {
 }
 
 FileRequestHandler.prototype.handle = function(req, res) {
-  var file = find(this.files, url.parse(req.url).pathname);
+  var filename = url.parse(req.url).pathname;
+  filename = filename.substr(this.len);
+  var file = find(this.files, filename);
   if (file === null) {
     return app_http.replyNotFound(res);
   }
@@ -99,7 +103,8 @@ function displayStats(files) {
 }
 
 FileRequestHandler.prototype.init = function(cb) {
-  readDir(this.publicDir, this.files, function() { displayStats(this.files); cb(); });
+  var self = this;
+  readDir(this.publicDir, this.files, function() { displayStats(self.files); cb(); });
 };
   
 // Store contents of files in dir in the files array.
@@ -143,7 +148,7 @@ function readFile2(files, filename, cb) {
   fs.readFile(filename, function (err, data) {
     if (err) throw err;
     var file = {
-      name: filename.substr(publicDir.length),
+      name: filename.substr(filename.indexOf('/') + 1),
       type: ext.type,
       data: data,
       etag: app_http.etag(data)
@@ -157,4 +162,4 @@ function readFile2(files, filename, cb) {
     });
   });
 }
-  
+ 

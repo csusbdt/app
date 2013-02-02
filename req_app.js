@@ -12,7 +12,7 @@ exports.init = function(cb) {
     etag = app_http.etag(plainHtml);
     zlib.gzip(plainHtml, function(err, result) {
       if (err) throw err;
-      gzippedgHtml = result;
+      gzippedHtml = result;
       cb();
     });
   });
