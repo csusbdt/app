@@ -2,25 +2,25 @@
 
 ## Overview
 
-This document is a record of how I set up the app project.  
-These are the steps a release manager would follow to setup a project; 
+This document is a record of how I set up the app project.
+These are the steps a release manager would follow to setup a project;
 other project developers do not do this.
 
-The project is setup to resemble a professional development environment, 
+The project is setup to resemble a professional development environment,
 with deploys for development, staging and production.
 
 
 ## Create a git repository for the project
 
-Create a repository at Github; select to include a README file, 
-which will contain links to readings and instructions on how to 
+Create a repository at Github; select to include a README file,
+which will contain links to readings and instructions on how to
 set up a local development environment.
 
 Clone the repository with the following.
 
     git clone https://github.com/csusbdt/app.git
 
-At this point, there is 1 remote repository location called `origin`.  
+At this point, there is 1 remote repository location called `origin`.
 To see this, run the following.
 
     git remote
@@ -35,7 +35,7 @@ Log into heroku.
 
     heroku login
 
-Inside the app folder, run the following 2 commands to create remote 
+Inside the app folder, run the following 2 commands to create remote
 Heroku apps for staging and release deployments of the project.
 
     heroku apps:create csusbdt-apps --remote staging
@@ -50,50 +50,65 @@ To see these Heroku apps, run the following.
 
     heroku apps
 
-Also, the _heroku apps:create_ command given above configures the local repository 
-with 2 additional remote locations named _staging_ and _production_.  
-To see these, along with _origin_, run the following.
+Also, the _heroku apps:create_ command given above configures the local repository
+with 2 additional remote locations named _staging_ and _production_.
+To see these, run the following.
 
     git remote -v
 
-Note that when other project developers clone the repository from Github, their repositories will only contain a reference to the remote at Github called _origin_.
+Note that when other project developers clone the repository from Github,
+their repositories will only contain a reference to the remote at Github called _origin_.
 
 ## Create Facebook apps for development, staging and production
 
 ### development
 
-Go to https://developers.facebook.com/apps and create a new app named app594d with the following settings.
+Go to https://developers.facebook.com/apps and create a new app named appd
+with the following settings.
 
-- For the app display name, use "App 594d". 
-- For the app namespace, use `appfnfd`. 
+- For the app display name, use "appd". 
+- For the app namespace, use `appd`. 
 - For the app domain, use `localhost`.
 - Enable sandbox mode so that only developers will be able to use the app.
-- Under the integration options, select _Website with Facebook Login_ and for the site url use `http://localhost:5000/`.
+- Under the integration options, select _Website with Facebook Login_
+  and for the site url use `http://localhost:5000/`.
 
-To deploy a local development instance, the system needs access to the app's Facebook id and secret.  We pass this to the server as the following 2 environmental variables.
+To deploy a local development instance, the system needs access to the app's
+Facebook id and secret.
+We pass these to the server with the following 2 environmental variables.
 
-    FACEBOOK_APP_ID = <development app id>
-    FACEBOOK_APP_SECRET = <development app secret>
+    FB_APP_ID = <development app id>
+    FB_APP_SECRET = <development app secret>
 
-Place the above 2 lines in a file named `.env`.  This file will be read by the foreman program that we will use to launch the app llocally.
+Place the above 2 lines in a file named `.env`.
+This file will be read by the foreman program that we will use
+to launch the app locally.
 
-Other developers will set different values for their development deployment, so omit `.env` from repository by adding it to `.gitignore`.
+Other developers will set different values for their development deployment,
+so omit `.env` from the repository by adding it to `.gitignore`.
 
 
 ### staging
 
-Create another app named app594s with the following settings.
+Create another Facebook app named apps with the following settings.
 
-- For the app display name, use "App 594s".
-- For the app namespace, use `appfnfs`. 
-- For the app domain, use `app594s.herokuapp.com`.
+- For the app display name, use "apps".
+- For the app namespace, use `apps`. 
+- For the app domain, use `apps.herokuapp.com`.
 - Enable sandbox mode so that only developers will be able to use the app.
-- Under the integration options, select _Website with Facebook Login_ and for the site url use `http://app594s.herokuapp.com/`.
+- Under the integration options, select _Website with Facebook Login_ and
+for the site url use `https://apps.herokuapp.com/`.
 
-Use the `heroku config:add` command to write the app id and secret into the Heroku's execution environment for the staging app.
+In order to set variables for the Heroku runtime environment,
+you need to do an initial deployment.
 
-    heroku config:add --app app594s FACEBOOK_APP_ID=<staging id>
-    heroku config:add --app app594s FACEBOOK_APP_SECRET=<staging secret>
+    git push staging master
+
+Use the `heroku config:add` command to write the app id and secret into
+Heroku's execution environment for the staging app.
+
+    heroku config:add --app apps FB_APP_ID=<staging id>
+    heroku config:add --app apps FB_APP_SECRET=<staging secret>
 
 You can check these settings by using the following command.
 
@@ -102,22 +117,24 @@ You can check these settings by using the following command.
 
 ### production
 
-Create another app named app594 with the following settings.
+Create another app named app with the following settings.
 
-- For the app display name, use "App 594".
-- For the app namespace, use `appfnf`. 
-- For the app domain, use `app594.herokuapp.com`.
+- For the app display name, use "App".
+- For the app namespace, use `app`. 
+- For the app domain, use `app.herokuapp.com`.
 - Leave sandbox mode disabled.
-- Under the integration options, select _Website with Facebook Login_ and for the site url use `http://app594.herokuapp.com/`.
+- Under the integration options, select _Website with Facebook Login_
+  and for the site url use `https://app.herokuapp.com/`.
 
-Use the `heroku config:add` command to write the app id and secret into the Heroku's execution environment for the production app.
+Use the `heroku config:add` command to write the app id and secret into
+Heroku's execution environment for the production app.
 
-    heroku config:add --app app594 FACEBOOK_APP_ID=<production id>
-    heroku config:add --app app594 FACEBOOK_APP_SECRET=<production secret>
+    heroku config:add --app app FACEBOOK_APP_ID=<production id>
+    heroku config:add --app app FACEBOOK_APP_SECRET=<production secret>
 
 You can check these settings by using the following command.
 
-    heroku config --app app594
+    heroku config --app app
 
 ## Create Mongo databases
 
