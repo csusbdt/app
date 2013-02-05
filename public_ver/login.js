@@ -3,8 +3,14 @@ $(function() {
 
   var $loginBtn = $('<button id="login-btn">Facebook Login</button>');  
   $loginBtn.click(function() {
-    a.fbLogin(function() {
-      console.log('just logged in.');
+    FB.login(function(response) {
+      if (response.authResponse) {
+        a.uid = response.authResponse.userID;
+        a.accessToken = response.authResponse.accessToken;
+        a.screen.next('title');
+      } else {
+        console.log('Login failed.');
+      }
     });
   });
   a.screen.$nextScreen.append($loginBtn);
