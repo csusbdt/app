@@ -1,43 +1,48 @@
+a.screen = {
+  fadeOutSpeed: 300,
+  fadeInSpeed: 300
+};
+
 $(function() {
-  var n = -1;
-  var $_nextScreen;
-  window.a = {};
+  var n = -1;        // -1 means it's ok to transition to another screen.
   
-  a.doneScreen = function($nextScreen, speed){
-    if (speed === undefined) speed = 300;
-    if ($nextScreen !== undefined){
-      $_nextScreen = $nextScreen;
+  // a.screen.done is called twice as follows:
+  //   (1) when the old screen has faded out completely, and
+  //   (2) when the javascript for the new screen has finished loading
+  a.screen.done = function() {  
+    if (--n === 0) {
+      $('.screen').remove();
+      a.screen.$nextScreen.addClass('screen');
+      $('body').append(a.screen.$nextScreen);
+      a.screen.$nextScreen.fadeIn(a.screen.fadeInSpeed, function() { 
+        a.screen.$nextScreen = null;
+        n = -1; 
+      });
     }
-    if (--n !== 0) return;
-    $('.screen').remove();
-    $_nextScreen.addClass('screen');
-    $('body').append($_nextScreen);        
-    $_nextScreen.fadeIn(speed, function() { n = -1; });
   };
        
-  a.screen = function(screenName, speed) {
-    if (n !== -1) return;  // don't allow more than one transition at a time
+  a.screen.next = function(screenName) {
+    if (n !== -1) return; 
     n = 2;
-    if (speed === undefined) speed = 300;
-    
+    a.screen.$nextScreen = $('<div></div>');
     var ref = document.getElementsByTagName('script')[0],
         js = document.createElement('script');
     js.async = true;
     js.src = screenName + '.js';
     ref.parentNode.insertBefore(js, ref);
-    $('.screen').fadeOut(speed, a.doneScreen);
+    $('.screen').fadeOut(a.screen.fadeOutSpeed, a.screen.done);
   };
   
   a.fbLogin = function(cb) {
       FB.login(function(response) {
         if (response.authResponse) {
-          console.log('?uid=' + response.authResponse.userID);
-          console.log('&token=' + response.authResponse.accessToken);
-          a.screen('title');
-          //cb('');
+          a.uid = response.authResponse.userID;
+          a.accessToken = response.authResponse.accessToken;
+          a.screen.next('title');
+          cb();
         } else {
-          a.screen('login');
-          //cb('Login failed.');
+          a.screen.next('login');
+          cb(new Error('Login failed.'));
         }
       });
     };
@@ -53,14 +58,15 @@ $(function() {
     FB.Canvas.setAutoGrow();
     FB.getLoginStatus(function(response) {
       if (response.status === 'connected') {
-        console.log('?uid=' + response.authResponse.userID);
-        console.log('&token=' + response.authResponse.accessToken);
-        a.screen('title');
+        a.uid = response.authResponse.userID;
+        a.accessToken = response.authResponse.accessToken;
+        a.screen.next('title');
       } else {
-        a.screen('login');
+        a.screen.next('login');
       }
     });
   };
   
   fbAsyncInit();
- });
+});
+
