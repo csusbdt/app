@@ -1,5 +1,26 @@
 var client = require('./model').client;
 
+exports.isSecretGood = function(user, cb) {
+  client.open(function(err, db) {
+    if (err) return cb(err);
+    db.collection('users').findOne(
+      { _id: user.uid }, 
+      { secret: 1, _id: 0 }, 
+      function(err, dbUser) {
+        db.close();
+        if (err) return cb(err); 
+        if (dbUser) {
+          return cb(user.secret === dbUser.secret);
+        } else {
+          //console.log('WARNING: user not found');
+          return cb(false);
+        }
+      }
+    );
+  });
+};
+
+/*
 // Input: user.uid
 // Reads: user.secret, user.expires
 exports.readSecret = function(user, cb) {
@@ -22,6 +43,7 @@ exports.readSecret = function(user, cb) {
     );
   });
 };
+*/
 
 // Input: user.uid, user.secret, user.expires
 // Writes: user.secret, user.expires
@@ -54,12 +76,11 @@ exports.readState = function(user, cb) {
         db.close();
         if (err) return cb(err);
         if (dbUser.state) {
-          user.state = dbUser.state;
+          return cb(dbUser.state);
         } else {
           // if app state missing, then use implicit app state
-          user.state = { number: 0 }
+          return cb({ number: 0 });
         }
-        cb();
       }
     );
   });

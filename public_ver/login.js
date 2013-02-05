@@ -13,6 +13,6 @@ $(function() {
       }
     });
   });
-  a.screen.$nextScreen.append($loginBtn);
+  a.screen.append($loginBtn);
   a.screen.done();
 });
