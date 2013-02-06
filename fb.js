@@ -138,6 +138,34 @@ exports.init = function(cb) {
   });
 };
 
+exports.getUid = function(userAccessToken, cb) {
+  var result;
+  var options = {
+    hostname: 'graph.facebook.com',
+    path: '/debug_token' + 
+          '?input_token=' + userAccessToken +
+          '?access_token=' + appToken +
+          '&fields=id',
+    method: 'GET'
+  };
+  send(options, function(data) {
+    if (data instanceof Error) {
+      data.message += '\nfb.getUid: Failed.'
+      return cb(data);
+    }
+    if (data.id === undefined) {
+      return cb(new Error(
+        'fb.getUid: id not returned by facebook.' +
+        '\nfb.getUid: Facebook returned: ' + JSON.stringify(data)
+      ));
+    }
+    cb({
+      uid: data.id 
+    });
+  });
+};
+
+
 // Exchange a short-lived access token for a long-lived one,
 // which we call a secret.
 exports.exchangeAccessToken = function(accessToken, cb) {

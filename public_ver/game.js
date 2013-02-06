@@ -11,7 +11,7 @@ $(function() {
       type: 'post',
       dataType: 'json',
       cache: false,
-      data: JSON.stringify(a.creds)
+      data: JSON.stringify(a.creds.accessToken)
     })
     .done(function(state) {
       if (state.login !== undefined) {

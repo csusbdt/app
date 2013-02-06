@@ -1,34 +1,30 @@
 var app_ajax    = require('./app_ajax');
 var model_user  = require('./model_user');
+var fb          = require('./fb');
 
 exports.get_num = function(req, res) {
-  app_ajax.parse(req, function(creds) {
-    if (creds instanceof Error) {
-      return app_ajax.error(res, creds);
-    } else if (creds.uid === undefined) {
-      return app_ajax.error(res);
+  app_ajax.parse(req, function(accessToken) {
+    if (accessToken instanceof Error) {
+      return app_ajax.error(res, accessToken);
     } else if (creds.accessToken === undefined) {
       return app_ajax.error(res);
     } else {
-      // check accessToken HERE *****************************************
-      // ASSUME CHECK FAILS
-      return app_ajax.login(res);
-/*
-      var user = { _id: creds.uid, secret: user.secret };
-      model_user.isSecretGood(user, function(result) {
-        if (result instanceof Error) {
-          return app_ajax.login(res);
-        } else {
-          model_user.read_state(user, function(state) {
-            if (state instanceof Error) {
-              return app_ajax.login(req, res);
-            } else {
-              return app_ajax.reply(res, state);
-            }
-          });
+      fb.getUid(creds.accessToken, function(uid) {
+        if (uid instanceof Error) {
+          return app_ajax.error(res);
         }
+        if (uid.login !== undefined) {
+          return app_ajax.login(res);
+        }
+        var user = { _id: uid };
+        model_user.read_state(user, function(state) {
+          if (state instanceof Error) {
+            return app_ajax.error(res);
+          } else {
+            return app_ajax.reply(res, state);
+          }
+        });
       });
-*/
     }
   });
 };

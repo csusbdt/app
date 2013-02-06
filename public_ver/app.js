@@ -48,7 +48,8 @@
 
 a.creds = {};
 
-a.fbLogin = function(cb) {
+/*
+a.login = function(cb) {
   FB.login(function(response) {
     if (response.authResponse) {
       a.creds.uid = response.authResponse.userID;
@@ -61,8 +62,9 @@ a.fbLogin = function(cb) {
     }
   });
 };
+*/
     
-a.fbInit = function(fbAppId) {
+a.init = function(fbAppId) {
   FB.init({
     appId      : fbAppId,
     channelUrl : '://' + window.location.host + '/channel.html',
