@@ -1,11 +1,13 @@
-var client = require('./model').client;
+var app_db = require('./app_db');
+
+var client = app_db.client;
 
 // Input: user.uid
 // Reads: user.state
 exports.readState = function(user, cb) {
   client.open(function(err, mongoclient) {
     if (err) return cb(err);
-    var db = mongoclient.db('app');
+    var db = mongoclient.db(app_db.name);
     db.collection('users').findOne(
       { _id: user.uid }, 
       { state: 1, _id: 0 }, 
@@ -32,7 +34,7 @@ exports.readState = function(user, cb) {
 exports.writeState = function(user, cb) {
   client.open(function(err, mongoclient) {
     if (err) return cb(err);
-    var db = mongoclient.db('app');
+    var db = mongoclient.db(app_db.name);
     db.collection('users').update(
       { _id: user.uid }, 
       { $set: { state: user.state } },

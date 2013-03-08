@@ -3,7 +3,8 @@ var Server      = require('mongodb').Server;
 
 var host   = process.env.MONGO_HOST;
 var port   = parseInt(process.env.MONGO_PORT, 10);
-var dbName = 'app';
+
+exports.name = 'app';
 
 var serverOptions = {
   auto_reconnect: true, 

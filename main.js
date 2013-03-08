@@ -1,4 +1,4 @@
-var model   = require('./model');
+var app_db  = require('./app_db');
 var router  = require('./router');
 var fb      = require('./fb');
 
@@ -26,7 +26,7 @@ var n = 3;
 function done() {
   if (--n === 0) router.start();
 }
-model  .init(done);
+app_db .init(done);
 router .init(done);
 fb     .init(done);
 

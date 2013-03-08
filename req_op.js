@@ -1,6 +1,6 @@
-var app_ajax    = require('./app_ajax');
-var model_user  = require('./model_user');
-var fb          = require('./fb');
+var app_ajax  = require('./app_ajax');
+var db_user   = require('./db_user');
+var fb        = require('./fb');
 
 exports.get_num = function(req, res) {
   app_ajax.parse(req, function(data) {
@@ -17,7 +17,7 @@ exports.get_num = function(req, res) {
           return app_ajax.error(res);
         }
         var user = { uid: uid };
-        model_user.readState(user, function(state) {
+        db_user.readState(user, function(state) {
           if (state instanceof Error) {
             return app_ajax.error(res);
           } else {
@@ -48,7 +48,7 @@ exports.set_num = function(req, res) {
           return app_ajax.error(res);
         }
         var user = { uid: uid, state: { number: data.number } };
-        model_user.writeState(user, function(err) {
+        db_user.writeState(user, function(err) {
           if (err instanceof Error) {
             return app_ajax.error(res);
           } else {
