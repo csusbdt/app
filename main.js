@@ -1,5 +1,6 @@
-var model    = require('./model');
-var router   = require('./router');
+var model   = require('./model');
+var router  = require('./router');
+var fb      = require('./fb');
 
 // TODO: minify js and css as part of deployment process.
 // IDEA: minify at startup rather than as a build step.
@@ -21,10 +22,11 @@ process.env.FB_APP_ID  = process.env.FB_APP_ID  .replace(' ', '');
 process.env.APP_VER    = process.env.APP_VER    .replace(' ', '');
 
 // Run intializations before starting router.
-var n = 2;
+var n = 3;
 function done() {
   if (--n === 0) router.start();
 }
 model  .init(done);
 router .init(done);
+fb     .init(done);
 

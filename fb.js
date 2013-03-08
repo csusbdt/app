@@ -117,14 +117,16 @@ exports.init = function(cb) {
   var options = {
     hostname: 'graph.facebook.com',
     path: '/oauth/access_token?' + 
-          'client_id=' + process.env.FACEBOOK_APP_ID +
-          '&client_secret=' + process.env.FACEBOOK_SECRET +
+          'client_id=' + process.env.FB_APP_ID +
+          '&client_secret=' + process.env.FB_SECRET +
           '&grant_type=client_credentials',
     method: 'GET'
   };
+console.log('fb.init: options.path = ' + options.path);
   send(options, function(data) {
     if (data instanceof Error) {
       console.log('fb.init: Failed to get app token. Could be bad app id or secret.');
+      console.log('Error from Facebook: ' + data.message);
       throw data;
     }
     if (data.access_token === undefined) {
@@ -134,9 +136,12 @@ exports.init = function(cb) {
       );
     }
     appToken = data.access_token;
+console.log('init: appToken = ' + appToken);
     cb(appToken);
   });
 };
+
+/* need to look at injection attacks through accessToken, etc. */
 
 exports.getUid = function(userAccessToken, cb) {
   var result;
@@ -144,8 +149,7 @@ exports.getUid = function(userAccessToken, cb) {
     hostname: 'graph.facebook.com',
     path: '/debug_token' + 
           '?input_token=' + userAccessToken +
-          '?access_token=' + appToken +
-          '&fields=id',
+          '&access_token=' + appToken,
     method: 'GET'
   };
   send(options, function(data) {
@@ -153,14 +157,23 @@ exports.getUid = function(userAccessToken, cb) {
       data.message += '\nfb.getUid: Failed.'
       return cb(data);
     }
-    if (data.id === undefined) {
+    if (data.data.is_valid === undefined) {
+      return cb(new Error(
+        'fb.getUid: data.is_valid undefined' +
+        '\nfb.getUid: Facebook returned: ' + JSON.stringify(data)
+      ));
+    }
+    if (!data.data.is_valid) { // access token not valid
+      return cb({ login: true });
+    }
+    if (data.data.user_id === undefined) {
       return cb(new Error(
         'fb.getUid: id not returned by facebook.' +
         '\nfb.getUid: Facebook returned: ' + JSON.stringify(data)
       ));
     }
     cb({
-      uid: data.id 
+      uid: data.data.user_id 
     });
   });
 };

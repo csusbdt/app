@@ -20,7 +20,12 @@ exports.parse = function(req, cb) {
   req.on('end', function() {
     if (dataString === undefined || dataString.length === 0) return cb({});
     try {
-      return cb(JSON.parse(dataString));
+      var data = JSON.parse(dataString);
+      if (data.accessToken) {
+        cb(data.accessToken);
+      } else {
+        cb(new Error('\napp_ajax.parse: accessToken missing from message body = ' + dataString));
+      }
     } catch (err) {
       err.message += '\napp_ajax.parse: ' + err.message + ' for message body = ' + dataString;
       return cb(err);

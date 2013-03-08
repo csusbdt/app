@@ -6,14 +6,16 @@ exports.get_num = function(req, res) {
   app_ajax.parse(req, function(accessToken) {
     if (accessToken instanceof Error) {
       return app_ajax.error(res, accessToken);
-    } else if (creds.accessToken === undefined) {
+    } else if (accessToken === undefined) {
       return app_ajax.error(res);
     } else {
-      fb.getUid(creds.accessToken, function(uid) {
+console.log('accessToken = ' + accessToken);
+      fb.getUid(accessToken, function(uid) {
         if (uid instanceof Error) {
+console.log(uid.message);
           return app_ajax.error(res);
         }
-        if (uid.login !== undefined) {
+        if (uid.login !== undefined) { // user needs to login
           return app_ajax.login(res);
         }
         var user = { _id: uid };
