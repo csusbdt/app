@@ -35,7 +35,9 @@ exports.parse = function(req, cb) {
 
 // Send the client data as a JSON string.
 exports.reply = function(res, data) {
-  if (typeof data !== 'object') throw new Error('app_ajax: reply must be passed an object');
+  if (data === undefined) {
+    data = {};
+  }
   var buf = new Buffer(JSON.stringify(data), 'utf8');
   res.writeHead(200, {
     'Content-Type': 'application/json; charset=UTF-8',

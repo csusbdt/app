@@ -16,13 +16,15 @@ exports.readState = function(user, cb) {
         if (err) return cb(err);
         if (dbUser) {
           if (dbUser.state) {
-            return cb(dbUser.state);
+            user.state = dbUser.state;
+            return cb();
           } else {
             return cb(new Error('model_user.readState: dbUser.state is undefined'));
           }
         } else {
           // if app state missing, then use implicit app state
-          return cb({ number: 0 });
+          user.state = { number: 0 };
+          return cb();
         }
       }
     );
