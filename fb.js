@@ -122,7 +122,6 @@ exports.init = function(cb) {
           '&grant_type=client_credentials',
     method: 'GET'
   };
-console.log('fb.init: options.path = ' + options.path);
   send(options, function(data) {
     if (data instanceof Error) {
       console.log('fb.init: Failed to get app token. Could be bad app id or secret.');
@@ -136,7 +135,6 @@ console.log('fb.init: options.path = ' + options.path);
       );
     }
     appToken = data.access_token;
-console.log('init: appToken = ' + appToken);
     cb(appToken);
   });
 };

@@ -24,9 +24,9 @@ exports.client = client;
 // Make sure we can connect to database.
 // Throw any error to halt program.
 exports.init = function(cb) {
-  client.open(function(err, db) {
+  client.open(function(err, mongoclient) {
     if (err) throw err;
-    db.close(); 
+    mongoclient.close(); 
     cb();
   }); 
 };

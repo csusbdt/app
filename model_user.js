@@ -67,16 +67,24 @@ exports.writeSecret = function(user, cb) {
 // Input: user.uid
 // Reads: user.state
 exports.readState = function(user, cb) {
-  client.open(function(err, db) {
+
+console.log('model_user.readState: user = ' + JSON.stringify(user));
+
+  client.open(function(err, mongoclient) {
     if (err) return cb(err);
+    var db = mongoclient.db('app');
     db.collection('users').findOne(
       { _id: user.uid }, 
       { state: 1, _id: 0 }, 
       function(err, dbUser) {
         db.close();
         if (err) return cb(err);
-        if (dbUser.state) {
-          return cb(dbUser.state);
+        if (dbUser) {
+          if (dbUser.state) {
+            return cb(dbUser.state);
+          } else {
+            return cb(new Error('model_user.readState: dbUser.state is undefined'));
+          }
         } else {
           // if app state missing, then use implicit app state
           return cb({ number: 0 });

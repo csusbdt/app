@@ -9,17 +9,15 @@ exports.get_num = function(req, res) {
     } else if (accessToken === undefined) {
       return app_ajax.error(res);
     } else {
-console.log('accessToken = ' + accessToken);
       fb.getUid(accessToken, function(uid) {
         if (uid instanceof Error) {
-console.log(uid.message);
           return app_ajax.error(res);
         }
         if (uid.login !== undefined) { // user needs to login
           return app_ajax.login(res);
         }
         var user = { _id: uid };
-        model_user.read_state(user, function(state) {
+        model_user.readState(user, function(state) {
           if (state instanceof Error) {
             return app_ajax.error(res);
           } else {
