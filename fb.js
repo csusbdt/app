@@ -141,6 +141,7 @@ exports.init = function(cb) {
 
 /* need to look at injection attacks through accessToken, etc. */
 
+// If user needs to login, then call cb with no arguments.
 exports.getUid = function(userAccessToken, cb) {
   var result;
   var options = {
@@ -162,7 +163,7 @@ exports.getUid = function(userAccessToken, cb) {
       ));
     }
     if (!data.data.is_valid) { // access token not valid
-      return cb({ login: true });
+      return cb();
     }
     if (data.data.user_id === undefined) {
       return cb(new Error(
@@ -170,9 +171,7 @@ exports.getUid = function(userAccessToken, cb) {
         '\nfb.getUid: Facebook returned: ' + JSON.stringify(data)
       ));
     }
-    cb({
-      uid: data.data.user_id 
-    });
+    cb(data.data.user_id);
   });
 };
 

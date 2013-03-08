@@ -6,6 +6,7 @@ var req_mem    = require('./req_mem');
 var req_app    = require('./req_app');
 var req_file   = require('./req_file');
 var get_num    = require('./req_op').get_num;
+var set_num    = require('./req_op').set_num;
 
 var verpath  = '/' + process.env.APP_VER + '/';
 
@@ -35,6 +36,7 @@ function route(req, res) {
 function op(req, res) {
   var pathname = url.parse(req.url).pathname;
   if (pathname === '/op/get-num') get_num(req, res);
+  if (pathname === '/op/set-num') set_num(req, res);
 }
 
 function requestHandler(req, res) {

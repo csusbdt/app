@@ -3,25 +3,56 @@ var model_user  = require('./model_user');
 var fb          = require('./fb');
 
 exports.get_num = function(req, res) {
-  app_ajax.parse(req, function(accessToken) {
-    if (accessToken instanceof Error) {
-      return app_ajax.error(res, accessToken);
-    } else if (accessToken === undefined) {
+  app_ajax.parse(req, function(data) {
+    if (data instanceof Error) {
+      return app_ajax.error(res, data);
+    } else if (data.accessToken === undefined) {
       return app_ajax.error(res);
     } else {
-      fb.getUid(accessToken, function(uid) {
+      fb.getUid(data.accessToken, function(uid) {
+        if (uid === undefined) { // user needs to login
+          return app_ajax.login(res);
+        }
         if (uid instanceof Error) {
           return app_ajax.error(res);
         }
-        if (uid.login !== undefined) { // user needs to login
-          return app_ajax.login(res);
-        }
-        var user = { _id: uid };
+        var user = { uid: uid };
         model_user.readState(user, function(state) {
           if (state instanceof Error) {
             return app_ajax.error(res);
           } else {
             return app_ajax.reply(res, state);
+          }
+        });
+      });
+    }
+  });
+};
+
+exports.set_num = function(req, res) {
+  app_ajax.parse(req, function(data) {
+    if (data instanceof Error) {
+      return app_ajax.error(res, data);
+    } else if (data.accessToken === undefined) {
+      return app_ajax.error(res);
+    } else {
+      if (data.number === undefined) {
+        console.log('warning: req_op.set_num: data.number undefined');
+        return app_ajax.error(res);
+      }
+      fb.getUid(data.accessToken, function(uid) {
+        if (uid === undefined) { // user needs to login
+          return app_ajax.login(res);
+        }
+        if (uid instanceof Error) {
+          return app_ajax.error(res);
+        }
+        var user = { uid: uid, state: { number: data.number } };
+        model_user.writeState(user, function(err) {
+          if (err instanceof Error) {
+            return app_ajax.error(res);
+          } else {
+            return app_ajax.reply(res, user.state);
           }
         });
       });

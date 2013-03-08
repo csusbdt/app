@@ -21,10 +21,10 @@ exports.parse = function(req, cb) {
     if (dataString === undefined || dataString.length === 0) return cb({});
     try {
       var data = JSON.parse(dataString);
-      if (data.accessToken) {
-        cb(data.accessToken);
+      if (data) {
+        cb(data);
       } else {
-        cb(new Error('\napp_ajax.parse: accessToken missing from message body = ' + dataString));
+        cb(new Error('\napp_ajax.parse: data is false from message body = ' + dataString));
       }
     } catch (err) {
       err.message += '\napp_ajax.parse: ' + err.message + ' for message body = ' + dataString;
@@ -35,7 +35,7 @@ exports.parse = function(req, cb) {
 
 // Send the client data as a JSON string.
 exports.reply = function(res, data) {
-  if (typeof data !== 'object') return cb(new Error('app_ajax: reply must be passed an object'));
+  if (typeof data !== 'object') throw new Error('app_ajax: reply must be passed an object');
   var buf = new Buffer(JSON.stringify(data), 'utf8');
   res.writeHead(200, {
     'Content-Type': 'application/json; charset=UTF-8',
