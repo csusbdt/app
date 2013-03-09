@@ -14,6 +14,9 @@ The req_app module handles requests for __/ver/__. At server start up, req_app r
 __app.html__ and replace __FB_APP_ID__ with the application's Facebook app id as
 provided through an environmental variable.
 
+One problem with the above mechanism is that the app has no way of telling the browser 
+to remove old content from its cache.
+
 app.html is the screen container.  The initial screen is a temporary loading screen,
 which is replaced with a login screen or a title screen.
 

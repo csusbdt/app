@@ -48,21 +48,40 @@
 
 a.creds = {};
 
-/*
+a.relogin = function(cb) {
+console.log('a.relogin()');
+  FB.getLoginStatus(function(response) {
+    if (response.status === 'connected') {
+      a.creds.uid = response.authResponse.userID;
+      a.creds.accessToken = response.authResponse.accessToken;
+      cb();
+    } else if (response.status === 'not_authorized') {
+      a.screen.next('login');
+    } else {
+      var $relogin = $('<button>Login to Facebook</button>');
+      $('.screen').hide();
+      $('body').append($relogin);
+      $relogin.click(function() {
+        $relogin.remove();
+        $('.screen').show();
+        a.login(cb);
+      });
+    }
+  }, true);
+};
+
 a.login = function(cb) {
+console.log('a.login()');
   FB.login(function(response) {
     if (response.authResponse) {
       a.creds.uid = response.authResponse.userID;
       a.creds.accessToken = response.authResponse.accessToken;
-      a.screen.next('title');
       cb();
     } else {
       a.screen.next('login');
-      cb(new Error('Login failed.'));
     }
   });
 };
-*/
     
 a.init = function(fbAppId) {
   FB.init({
