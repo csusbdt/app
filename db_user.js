@@ -5,14 +5,14 @@ var client = app_db.client;
 // Input: user.uid
 // Reads: user.state
 exports.readState = function(user, cb) {
-  client.open(function(err, mongoclient) {
+  client.open(function(err, client) {
     if (err) return cb(err);
-    var db = mongoclient.db(app_db.name);
+    var db = client.db(app_db.name);
     db.collection('users').findOne(
       { _id: user.uid }, 
       { state: 1, _id: 0 }, 
       function(err, dbUser) {
-        mongoclient.close();
+        client.close();
         if (err) return cb(err);
         if (dbUser) {
           if (dbUser.state) {
@@ -34,15 +34,15 @@ exports.readState = function(user, cb) {
 // Input: user.uid, user.state
 // Writes: user.state
 exports.writeState = function(user, cb) {
-  client.open(function(err, mongoclient) {
+  client.open(function(err, client) {
     if (err) return cb(err);
-    var db = mongoclient.db(app_db.name);
+    var db = client.db(app_db.name);
     db.collection('users').update(
       { _id: user.uid }, 
       { $set: { state: user.state } },
       { upsert: true },
       function(err) {
-        mongoclient.close();
+        client.close();
         if (err) {
           console.log("model_user.writeState: " + err.message);
           return cb(err);

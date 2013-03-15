@@ -22,7 +22,7 @@ exports.handle = function(req, res) {
     }
     // Check for valid Facebook access token.
     if (data.accessToken === undefined) {
-      logger.warning(__filename + ' : handle : facebook access token missing from ajax request');
+      logger.warning('facebook access token missing from ajax request', __filename);
       return app_ajax.error(res);
     }
     fb.getUid(data.accessToken, function(uid) {

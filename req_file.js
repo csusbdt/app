@@ -3,6 +3,7 @@ var zlib     = require('zlib');
 var url      = require('url');
 var crypto   = require('crypto');
 var app_http = require('./app_http');
+var logger   = require('./logger');
 
 // This code returns "not found" when '..' appears in the url.
 
@@ -92,19 +93,19 @@ function getExt(filename) {
 }
       
 // Calculate and display memory consumption.
-function displayStats(files) {
+function displayStats(dir, files) {
   var uncompressed = 0, compressed = 0;
   for (var i = 0; i < files.length; ++i) {
     uncompressed += files[i].data.length;
     if (files[i].gzip !== undefined) compressed += files[i].gzip.length;
   }
-  console.log('memfile bytes, uncompressed: ' + Math.ceil(uncompressed / 1024 / 1024) + ' MB');
-  console.log('memfile bytes, compressed:   ' + Math.ceil(compressed / 1024 / 1024) + ' MB');
+  logger.info('uncompressed bytes from ' + dir + ' = ' + Math.ceil(uncompressed / 1024 / 1024) + ' MB');
+  logger.info('compressed bytes from ' + dir + ' = ' + Math.ceil(compressed / 1024 / 1024) + ' MB');
 }
 
 FileRequestHandler.prototype.init = function(cb) {
   var self = this;
-  readDir(this.publicDir, this.files, function() { displayStats(self.files); cb(); });
+  readDir(this.publicDir, this.files, function() { displayStats(self.publicDir, self.files); cb(); });
 };
   
 // Store contents of files in dir in the files array.
@@ -124,8 +125,11 @@ function endsWith(str, ending) {
 }
 
 function ignore(filename) {
-  if (endsWith(filename, '.DS_Store')) return true;
-  if (endsWith(filename, '.swp'))      return true;
+  if (endsWith(filename, '.DS_Store') ||
+      endsWith(filename, '.swp')) {
+    logger.warning(filename + ' ignored.');
+    return true;
+  }
   return false;
 }
 
@@ -134,7 +138,7 @@ function readFile(files, filename, cb) {
   fs.stat(filename, function(err, stats) {
     if (err) throw err;
     if (stats.isDirectory()) {
-      readDir(files, filename, cb);
+      readDir(filename, files, cb);
     } else if (stats.isFile()) {
       readFile2(files, filename, cb);
     } else {

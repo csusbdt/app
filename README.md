@@ -71,8 +71,8 @@ Install dependencies.
 
 Create file __.env__ with the following contents.
 
-FACEBOOK_APP_ID=<your facebook app id>
-FACEBOOK_SECRET=<your facebook app id>
+FB_APP_ID=<your facebook app id>
+FB_SECRET=<your facebook app id>
 MONGO_HOST=localhost
 MONGO_PORT=27017
 APP_VER=1

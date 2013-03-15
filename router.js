@@ -8,6 +8,7 @@ var req_counters = require('./req_counters');
 var req_app      = require('./req_app');
 var req_file     = require('./req_file');
 var req_op       = require('./req_op');
+var logger       = require('./logger');
 
 var verpath  = '/' + process.env.APP_VER + '/';
 
@@ -50,6 +51,6 @@ function requestHandler(req, res) {
 exports.start = function() {
   http.createServer(requestHandler).listen(process.env.PORT, function(err) {
     if (err) throw err;
-    else console.log("listening on " + process.env.PORT);
+    else logger.info("listening on " + process.env.PORT);
   });
 };
