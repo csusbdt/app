@@ -73,8 +73,7 @@ Create file __.env__ with the following contents.
 
 FB_APP_ID=<your facebook app id>
 FB_SECRET=<your facebook app id>
-MONGO_HOST=localhost
-MONGO_PORT=27017
+MONGO_URI=<mongo uri string>
 APP_VER=1
 
 Start a local instance of MongoDB server.
@@ -96,8 +95,8 @@ in the Heroku environment you deploy into.  Use the following commands.
 
     heroku apps                       // lists all heroku apps
     heroku config --app <app-name>    // lists the current environmental variables
-    heroku config:set FB_APP_ID=12341234 -- app <app-name>   // set FB_APP_ID
+    heroku config:set FB_APP_ID=12341234 -- app <app-name> 
+    heroku config:set MONGO_URI=thisisauri -- app <app-name>   
 
-Also, you need to additionally set the DB_USERNAME and DB_PASSWORD.
 
 
