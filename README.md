@@ -11,11 +11,12 @@ This tiny root web page is not cached; the response to __/ver/__ is cached.
 When new versions of the app are released, __ver__ is changed to avoid stale content.
 
 The req_app module handles requests for __/ver/__. At server start up, req_app reads
-__app.html__ and replace __FB_APP_ID__ with the application's Facebook app id as
-provided through an environmental variable.
+__app.html__ and replaces __FB_APP_ID__ with the application's Facebook app id as
+provided through an environmental variable by the same name.
 
 One problem with the above mechanism is that the app has no way of telling the browser 
-to remove old content from its cache.
+to remove old content from its cache. An alternative that does not have this problem is
+to store content in localstorage.
 
 app.html is the screen container.  The initial screen is a temporary loading screen,
 which is replaced with a login screen or a title screen.
@@ -54,8 +55,7 @@ Developer Setup
 
 Maybe the easiest way to work is for each developer to fork the app project
 and then clone the forked repository into their local system.
-Then the release manager can merge from the forked repositories.
-
+Then the release manager can merge from the forked repositories.  
 I have not tested this approach.
 
 ## Local setup
@@ -88,5 +88,16 @@ Start local instance of the app.
 Check that the app is running by going to the following URL in a browser.
 
     http://localhost:5000/
+
+## Staging Deployment
+
+The above environmental variables need to be appropriately set
+in the Heroku environment you deploy into.  Use the following commands.
+
+    heroku apps                       // lists all heroku apps
+    heroku config --app <app-name>    // lists the current environmental variables
+    heroku config:set FB_APP_ID=12341234 -- app <app-name>   // set FB_APP_ID
+
+Also, you need to additionally set the DB_USERNAME and DB_PASSWORD.
 
 

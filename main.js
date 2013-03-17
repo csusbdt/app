@@ -10,8 +10,7 @@ var logger  = require('./logger');
 
 // Check for required environmental variables.
 if (process.env.PORT       === undefined) throw new Error('PORT not defined');
-if (process.env.MONGO_PORT === undefined) throw new Error('MONGO_PORT not defined');
-if (process.env.MONGO_HOST === undefined) throw new Error('MONGO_HOST not defined');
+if (process.env.MONGO_URI  === undefined) throw new Error('MONGO_URI not defined');
 if (process.env.FB_APP_ID  === undefined) throw new Error('FB_APP_ID not defined');
 if (process.env.APP_VER    === undefined) throw new Error('APP_VER not defined');
 
@@ -32,8 +31,7 @@ if (process.env.LOGGER_MAX_INFO === undefined) {
 
 // Trim for foreman.
 process.env.PORT       = process.env.PORT       .replace(' ', '');
-process.env.MONGO_PORT = process.env.MONGO_PORT .replace(' ', '');
-process.env.MONGO_HOST = process.env.MONGO_HOST .replace(' ', '');
+process.env.MONGO_URI  = process.env.MONGO_URI  .replace(' ', '');
 process.env.FB_APP_ID  = process.env.FB_APP_ID  .replace(' ', '');
 process.env.APP_VER    = process.env.APP_VER    .replace(' ', '');
 
