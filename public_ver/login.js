@@ -5,8 +5,8 @@ $(function() {
   $loginBtn.click(function() {
     FB.login(function(response) {
       if (response.authResponse) {
-        a.uid = response.authResponse.userID;
-        a.accessToken = response.authResponse.accessToken;
+        a.creds.uid = response.authResponse.userID;
+        a.creds.accessToken = response.authResponse.accessToken;
         a.screen.next('title');
       } else {
         console.log('Login failed.');
