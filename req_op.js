@@ -50,7 +50,7 @@ exports.handle = function(req, res) {
 }
 
 function get_num(data, res) {
-  var user = { uid: data.uid };
+  var user = { id: data.uid };
   db_user.readState(user, function(err) {
     if (err) {
       logger.error(__filename + ' : get_num : ' + err.message);
@@ -65,7 +65,7 @@ function set_num(data, res) {
     logger.warning(__filename + ' : set_num : data.number undefined');
     return app_ajax.error(res);
   }
-  var user = { uid: data.uid, state: { number: data.number } };
+  var user = { id: data.uid, state: { number: data.number } };
   db_user.writeState(user, function(err) {
     if (err) {
       logger.error(__filename + ' : set_num : ' + err.message);

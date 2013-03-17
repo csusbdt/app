@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "An app",
   "dependencies": {
-    "mongodb": "1.2.11"
+    "mongodb": "1.2.14"
   },
   "engines": {
      "node": "0.8.14",

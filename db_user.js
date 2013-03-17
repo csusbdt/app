@@ -4,7 +4,7 @@ var app_db = require('./app_db');
 // Reads: user.state
 exports.readState = function(user, cb) {
   app_db.db.collection('users').findOne(
-    { _id: user.uid }, 
+    { _id: user.id }, 
     { state: 1, _id: 0 }, 
     function(err, dbUser) {
       app_db.db.close();
@@ -25,11 +25,11 @@ exports.readState = function(user, cb) {
   );
 };
 
-// Input: user.uid, user.state
+// Input: user.id, user.state
 // Writes: user.state
 exports.writeState = function(user, cb) {
   app_db.db.collection('users').update(
-    { _id: user.uid }, 
+    { _id: user.id }, 
     { $set: { state: user.state } },
     { upsert: true },
     function(err) {

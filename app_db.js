@@ -1,16 +1,9 @@
-var assert      = require('assert');
 var Server      = require('mongodb').Server;
 var MongoClient = require('mongodb').MongoClient;
+var assert      = require('assert');
 
-//var host   = process.env.MONGO_HOST;
-//var port   = parseInt(process.env.MONGO_PORT, 10);
-//var mongoUri = process.env.MONGO_URI;
-
-//exports.name = 'app';
-
-//exports.db = db;
-
-// Make sure we can connect to database.
+// Establish database connection pool.
+// Export the database connection object.
 // Throw any error to halt program.
 exports.init = function(cb) {
   var serverOptions = {
@@ -26,8 +19,6 @@ exports.init = function(cb) {
     db: dbOptions,
     server: serverOptions
   };
-//  var server = new Server(host, port, serverOptions);
-//  var client = new MongoClient(server, dbOptions);
   MongoClient.connect(process.env.MONGO_URI, connectOptions, function(err, db) {
     if (err) throw err;
     assert(db !== null);
