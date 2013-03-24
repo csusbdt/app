@@ -1,7 +1,3 @@
-var MAX_WARNINGS_PRINTED = 12;
-var MAX_ERRORS_PRINTED = 5;
-var MAX_INFO_PRINTED = 5;
-
 var warningsPrinted  = 0;
 var errorsPrinted    = 0;
 var infoPrinted      = 0;

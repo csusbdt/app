@@ -1,85 +1,127 @@
+window.a = { state:{}, creds:{} };
+
 (function() {
-
-  // closure scope for defining a.screen
-
-  var fadeOutSpeed = 300,
-      fadeInSpeed =  300,
-      $nextScreen = null, 
-      n = -1;                // -1 means it's ok to transition to another screen
-
-  a.screen = {};
-
-  // a.screen.done is called twice as follows:
-  //   (1) when the old screen has faded out completely, and
-  //   (2) when the javascript for the new screen has finished loading
-  a.screen.done = function() {  
-    if (--n === 0) {
-      $('.screen').remove();
-      $nextScreen.addClass('screen');
-      $('body').append($nextScreen);
-      $nextScreen.fadeIn(fadeInSpeed, function() { 
-        $nextScreen = null;
-        n = -1; 
-      });
-    }
-  };
-       
-  a.screen.next = function(screenName) {
-    if (n !== -1) return; 
-    n = 2;
-    $nextScreen = $('<div></div>');
-    var ref = document.getElementsByTagName('script')[0],
-        js = document.createElement('script');
-    js.async = true;
-    js.src = screenName + '.js';
-    ref.parentNode.insertBefore(js, ref);
-    $('.screen').fadeOut(fadeOutSpeed, a.screen.done);
+ 
+  Screen = function(name) {
+    this.name = name;
+    this.$mainDiv = $('#' + name);
   };
 
-  a.screen.append = function(elem) {
-    if ($nextScreen) {
-      $nextScreen.append(elem);
-    } else {
-      $('#screen').append(elem);
-    }
+  a.currentScreen = 
+  a.loading       = new Screen('loading');
+  a.title         = new Screen('title');
+  a.login         = new Screen('login');
+  a.game          = new Screen('game');
+
+  Screen.prototype.transitionTo = function(screen) {
+    if (screen.onTransitionTo) screen.onTransitionTo();
+    a.currentScreen.$mainDiv.fadeOut(300, function() {
+      a.currentScreen = screen;
+      a.currentScreen.$mainDiv.fadeIn(300);
+    });
   };
 
 }());
 
-a.creds = {};
+a.title.initialized = false;
+
+a.title.onTransitionTo = function() {
+  if (a.title.initialized) return;
+  a.title.initialized = true;
+  var $img = $('#title-img'); 
+  $img.attr('src', 'http://graph.facebook.com/' + a.creds.uid + '/picture?type=large');
+};
+
+a.title.playNumberGame = function() {
+  a.title.transitionTo(a.game);
+};
+
+a.game.quitToTitle = function() {
+  a.game.transitionTo(a.title);
+};
+
+a.game.initialized = false;
+
+a.game.onTransitionTo = function() {
+  if (a.game.initialized) return;
+  a.game.initialized = true;
+  if (a.state.number) {
+    $('#game-num').html(a.state.number);
+  } else {
+    $.ajax({
+      url: '/op/get-num',
+      type: 'post',
+      dataType: 'json',
+      cache: false,
+      data: JSON.stringify( { 'accessToken': a.creds.accessToken } )
+    })
+    .done(function(data) {
+      if (data.login !== undefined) {
+        a.relogin(function() { initPage(); });
+      } else if (data.error !== undefined) {
+        $('#game-num').html(data.error);
+      } else {
+        a.state = data;
+        $('#game-num').html(a.state.number);
+      }
+    })
+    .fail(function(jqxhr, textStatus, errorThrown) {
+      if (errorThrown) $('#game-num').html('Error: ' + errorThrown);
+      else $('#game-num').html('Error: ' + textStatus);
+    });
+  }
+};
 
 a.relogin = function(cb) {
-console.log('a.relogin()');
   FB.getLoginStatus(function(response) {
     if (response.status === 'connected') {
       a.creds.uid = response.authResponse.userID;
       a.creds.accessToken = response.authResponse.accessToken;
       cb();
     } else if (response.status === 'not_authorized') {
-      a.screen.next('login');
+      a.currentScreen.transitionTo(a.login);
     } else {
-      var $relogin = $('<button>Login to Facebook</button>');
-      $('.screen').hide();
-      $('body').append($relogin);
-      $relogin.click(function() {
-        $relogin.remove();
-        $('.screen').show();
-        a.login(cb);
-      });
+      a.currentScreen.transitionTo(a.login);
     }
   }, true);
 };
 
 a.login = function(cb) {
-console.log('a.login()');
   FB.login(function(response) {
     if (response.authResponse) {
       a.creds.uid = response.authResponse.userID;
       a.creds.accessToken = response.authResponse.accessToken;
       cb();
     } else {
-      a.screen.next('login');
+      a.currentScreen.transitionTo(a.login);
     }
+  });
+};
+
+a.game.incrementNumber = function() {
+  $('#game-num').html(++a.state.number);
+};
+
+a.game.saveNumber = function() {
+  $.ajax({
+    url: '/op/set-num',
+    type: 'post',
+    dataType: 'json',
+    cache: false,
+    data: JSON.stringify( { 'accessToken': a.creds.accessToken, number: a.state.number } )
+  })
+  .done(function(data) {
+    if (data.login !== undefined) {
+      a.relogin(function() { $saveBtn.click(); });
+    } else if (data.error !== undefined) {
+      $('#game-num').html(data.error);
+    } else {
+      $('#game-num').append($('<span> saved</span>'));
+    }
+  })
+  .fail(function(jqxhr, textStatus, errorThrown) {
+    if (errorThrown) $('#game-num').html('Error: ' + errorThrown);
+    else $('#game-num').html('Error: ' + textStatus);
   });
 };
     
@@ -96,9 +138,9 @@ a.init = function(fbAppId) {
     if (response.status === 'connected') {
       a.creds.uid = response.authResponse.userID;
       a.creds.accessToken = response.authResponse.accessToken;
-      a.screen.next('title');
+      a.currentScreen.transitionTo(a.title);
     } else {
-      a.screen.next('login');
+      a.currentScreen.transitionTo(a.login);
     }
   });
 };
