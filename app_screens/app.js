@@ -1,4 +1,4 @@
-window.a = { state:{}, creds:{} };
+window.a = { state:{}, creds:{}, menu:{} };
 
 (function() {
  
@@ -97,6 +97,18 @@ a.login = function(cb) {
     }
   });
 };
+
+a.menu.title = function() {
+  a.currentScreen.transitionTo(a.title);
+}
+
+a.menu.game = function() {
+  a.currentScreen.transitionTo(a.game);
+}
+
+a.menu.about = function() {
+  $("#aboutModal").modal('show');
+}
 
 a.game.incrementNumber = function() {
   $('#game-num').html(++a.state.number);

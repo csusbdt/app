@@ -19,8 +19,9 @@ exports.handle = function(req, res) {
 
 exports.init = function(cb) {
   var n = 0;
-  var container, loading, login, title, game, appJs, fbJs;
+  var container, about, loading, login, title, game, appJs, fbJs;
   ++n; readFile('container.html', function(result) { container = result; done(); });
+  ++n; readFile('about.html',     function(result) { about     = result; done(); });
   ++n; readFile('loading.html',   function(result) { loading   = result; done(); });
   ++n; readFile('login.html',     function(result) { login     = result; done(); });
   ++n; readFile('title.html',     function(result) { title     = result; done(); });
@@ -30,7 +31,7 @@ exports.init = function(cb) {
   function done() { 
     if (--n !== 0) return;
     fbJs = fbJs.replace(/FB_APP_ID/g, process.env.FB_APP_ID);
-    container = container.replace(/SCREENS/, loading + login + title + game);
+    container = container.replace(/SCREENS/, about + loading + login + title + game);
     container = container.replace(/APP_JS/,  appJs); 
     container = container.replace(/FB_JS/,   fbJs);
     plainHtml = new Buffer(container, 'utf8');
