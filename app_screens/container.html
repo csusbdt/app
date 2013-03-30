@@ -17,6 +17,7 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+    <script>APP_JS</script>
   </head>
 
   <body>
@@ -33,9 +34,9 @@
           <a class="brand" href="#">App Demo</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="active"><a href="#" onclick="a.menu.title()">Home</a></li>
-              <li><a href="#" onclick="a.menu.game()">Play Game</a></li>
-              <li><a href="#" onclick="a.menu.about()">About</a></li>
+              <li id="menu-title"><a href="#" onclick="a.menu.title()">Home</a></li>
+              <li id="menu-game"><a href="#" onclick="a.menu.game()">Play Game</a></li>
+              <li id="menu-about"><a href="#" onclick="a.menu.about()">About</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -45,10 +46,9 @@
     <div class="container">
       <h1>App Main Screen</h1>
       SCREENS
-      <script>APP_JS</script>
-      <script>FB_JS</script>
     </div>
 
+    <script>FB_JS</script>
   </body>
 </html>
 

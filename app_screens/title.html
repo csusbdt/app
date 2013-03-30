@@ -1,7 +1,28 @@
 
-    <div id="title" style="display: none">
-      <div><img id="title-img" src="" /></div>
-      <button onclick="a.title.playNumberGame()">Play the number game.</button>
-      <div>You are logged into Facebook</div>
-    </div>
+<div id="title" style="display: none">
+   <div><img id="title-img" src="" /></div>
+   <button onclick="a.screens.title.playNumberGame()">Play the number game.</button>
+   <div>You are logged into Facebook</div>
+</div>
+
+<script>
+$(function() {
+  a.screens.title.initialized = false;
+
+  a.screens.title.onTransitionTo = function() {
+    if (a.screens.title.initialized) return;
+    a.screens.title.initialized = true;
+    var $img = $('#title-img');
+    $img.attr('src', 'http://graph.facebook.com/' + a.creds.uid + '/picture?type=large');
+  };
+
+  a.screens.title.playNumberGame = function() {
+    a.screens.title.transitionTo(a.screens.game);
+  };
+
+  a.screens.game.quitToTitle = function() {
+    a.screens.game.transitionTo(a.screens.title);
+  };
+});
+</script>
 
