@@ -1,5 +1,20 @@
+<div id="login" style="display: none">
+  <button onclick="a.screens.login.login()">Facebook Login</button>
+</div>
 
-    <div id="login" style="display: none">
-      <button onclick="a.login.login()">Facebook Login</button>
-    </div>
+<script>
+$(function() {
+  a.screens.login.login = function() {
+    FB.login(function(response) {
+      if (response.authResponse) {
+        a.creds.uid = response.authResponse.userID;
+        a.creds.accessToken = response.authResponse.accessToken;
+        a.currentScreen.transitionTo(a.screens.title);
+      } else {
+        alert('failed');
+      }
+    });
+  };
+});
+</script>
 

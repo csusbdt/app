@@ -40,18 +40,6 @@ a.relogin = function(cb) {
   }, true);
 };
 
-a.login = function(cb) {
-  FB.login(function(response) {
-    if (response.authResponse) {
-      a.creds.uid = response.authResponse.userID;
-      a.creds.accessToken = response.authResponse.accessToken;
-      cb();
-    } else {
-      a.currentScreen.transitionTo(a.screens.login);
-    }
-  });
-};
-
 a.init = function(fbAppId) {
   FB.init({
     appId      : fbAppId,
