@@ -13,6 +13,7 @@ $(function() {
   a.screens.title         = new Screen('title');
   a.screens.login         = new Screen('login');
   a.screens.game          = new Screen('game');
+  a.screens.friends       = new Screen('friends');
 
   Screen.prototype.transitionTo = function(screen) {
     if (screen.onTransitionTo) screen.onTransitionTo();
@@ -77,6 +78,10 @@ a.menu.title = function() {
 
 a.menu.game = function() {
   a.currentScreen.transitionTo(a.screens.game);
+}
+
+a.menu.friends = function() {
+  a.currentScreen.transitionTo(a.screens.friends);
 }
 
 a.menu.about = function() {

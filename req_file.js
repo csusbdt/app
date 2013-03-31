@@ -111,6 +111,9 @@ FileRequestHandler.prototype.init = function(cb) {
 // Store contents of files in dir in the files array.
 function readDir(dir, files, cb) {
   fs.readdir(dir, function(err, filenames) {
+    if (filenames === undefined) {
+      return cb();
+    }
     if (err) throw err;
     var n = filenames.length;
     for (var i = 0; i < filenames.length; ++i) {

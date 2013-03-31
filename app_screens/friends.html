@@ -1,0 +1,43 @@
+<div id="friends" style="display: none">
+
+</div>
+
+<script>
+$(function() {
+  function buildFriendsList() {
+    $('#friends').children().remove();
+    var qs = 'SELECT+uid,+name,+pic_square,+is_app_user+FROM+user+WHERE+uid+IN+(SELECT+uid2+FROM+friend+WHERE+uid1+=+me())';        
+    $.ajax({
+      url: 'https://graph.facebook.com/fql?q=' + qs + '&access_token=' + a.creds.accessToken,
+      type: "GET",
+      dataType: 'json'
+    })
+    .done(function(data) {
+      if (data.data === undefined) {
+        alert('fail');
+        return;
+      }
+      data.data.forEach(function(friend) {
+        var $div = $('<div></div>');
+        $div.append('<span>' + friend.name + '</span>');
+        $div.append('<img src="' + friend.pic_square + '"/>');
+        if (friend.is_app_user) {
+          $div.append('<span>I\'m an app user!</span>');
+        } else {
+          $div.append('<span onclick="app.invite(' + friend.uid + ')">Invite me.</div>');
+        }
+        $('#friends').append($div);
+      });
+    })
+    .fail(function(jqXHR, textStatus) {
+      console.log('textStatus: ' + textStatus);
+      console.log(jqXHR);
+    });
+  }
+
+  a.screens.friends.onTransitionTo = function() {
+    buildFriendsList();
+  };
+});
+</script>
+
