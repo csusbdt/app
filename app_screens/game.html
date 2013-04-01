@@ -1,9 +1,12 @@
 <div id="game" style="display: none">
-  <button onclick="a.screens.game.quitToTitle()">Quit to title</button>
-  <div id="game-num"></div>
-  <button onclick="a.screens.game.incrementNumber()">Increment number</button>
-  <button onclick="a.screens.game.saveNumber()">Save number</button>
   <div>You are playing the number game.</div>
+  <div>Your number: <span id="game-num"></span></div>
+  <div><button onclick="a.screens.game.incrementNumber()">Increment number</button> </div>
+  <div id="game-save-button" style="display: none">
+    <button onclick="a.screens.game.saveNumber()">Save number</button>
+  </div>
+  <div><button onclick="a.screens.game.readNumber()">Read number</button> </div>
+  <div><button onclick="a.screens.game.quitToTitle()">Quit to title</button></div>
 </div>
 
 <script>
@@ -20,27 +23,7 @@ $(function() {
     if (a.state.number) {
       $('#game-num').html(a.state.number);
     } else {
-      $.ajax({
-        url: '/op/get-num',
-        type: 'post',
-        dataType: 'json',
-        cache: false,
-        data: JSON.stringify( { 'accessToken': a.creds.accessToken } )
-      })
-      .done(function(data) {
-        if (data.login !== undefined) {
-          a.relogin(function() { initPage(); });
-        } else if (data.error !== undefined) {
-          $('#game-num').html(data.error);
-        } else {
-          a.state = data;
-          $('#game-num').html(a.state.number);
-        }
-      })
-      .fail(function(jqxhr, textStatus, errorThrown) {
-        if (errorThrown) $('#game-num').html('Error: ' + errorThrown);
-        else $('#game-num').html('Error: ' + textStatus);
-      });
+      a.screens.game.readNumber();
     }
   };
 
@@ -50,9 +33,36 @@ $(function() {
 
   a.screens.game.incrementNumber = function() {
     $('#game-num').html(++a.state.number);
+    $('#game-save-button').show();
+  };
+
+  a.screens.game.readNumber = function() {
+    $('#game-save-button').hide();
+    $.ajax({
+      url: '/op/get-num',
+      type: 'post',
+      dataType: 'json',
+      cache: false,
+      data: JSON.stringify( { 'accessToken': a.creds.accessToken } )
+    })
+    .done(function(data) {
+      if (data.login !== undefined) {
+        a.relogin(function() { initPage(); });
+      } else if (data.error !== undefined) {
+        $('#game-num').html(data.error);
+      } else {
+        a.state = data;
+        $('#game-num').html(a.state.number);
+      }
+    })
+    .fail(function(jqxhr, textStatus, errorThrown) {
+      if (errorThrown) $('#game-num').html('Error: ' + errorThrown);
+      else $('#game-num').html('Error: ' + textStatus);
+    });
   };
 
   a.screens.game.saveNumber = function() {
+    $('#game-save-button').hide();
     $.ajax({
       url: '/op/set-num',
       type: 'post',
