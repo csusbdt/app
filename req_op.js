@@ -1,8 +1,10 @@
-var url       = require('url');
-var logger    = require('./logger');
-var app_ajax  = require('./app_ajax');
-var db_user   = require('./db_user');
-var fb        = require('./fb');
+var url        = require('url');
+var logger     = require('./logger');
+var app_ajax   = require('./app_ajax');
+var db_user    = require('./db_user');
+var fb         = require('./fb');
+var op_get_num = require('./op_get_num');
+var op_set_num = require('./op_set_num');
 
 exports.loginReplies   = 0;
 exports.getNumRequests = 0;
@@ -55,10 +57,10 @@ exports.handle = function(req, res) {
         var pathname = url.parse(req.url).pathname;
         if (pathname === '/op/get-num') {
           ++exports.getNumRequests;
-          get_num(data, res);
+          op_get_num.handle(data, res);
         } else if (pathname === '/op/set-num') {
           ++exports.setNumRequests;
-          set_num(data, res);
+          op_set_num.handle(data, res);
         } else {
           ++exports.unknownOps;
         }
@@ -66,30 +68,4 @@ exports.handle = function(req, res) {
     });
   });
 }
-
-function get_num(data, res) {
-  var user = { id: data.uid };
-  db_user.readState(user, function(err) {
-    if (err) {
-      logger.error(__filename + ' : get_num : ' + err.message);
-      return app_ajax.error(res);
-    }
-    return app_ajax.reply(res, user.state);
-  });
-};
-
-function set_num(data, res) {
-  if (data.number === undefined) {
-    logger.warning(__filename + ' : set_num : data.number undefined');
-    return app_ajax.error(res);
-  }
-  var user = { id: data.uid, state: { number: data.number } };
-  db_user.writeState(user, function(err) {
-    if (err) {
-      logger.error(__filename + ' : set_num : ' + err.message);
-      return app_ajax.error(res);
-    }
-    return app_ajax.reply(res);
-  });
-};
 
