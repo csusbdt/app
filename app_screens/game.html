@@ -43,7 +43,7 @@ $(function() {
       type: 'post',
       dataType: 'json',
       cache: false,
-      data: JSON.stringify( { 'accessToken': a.creds.accessToken, 'appver': a.appver } )
+      data: JSON.stringify( { 'accessToken': a.creds.accessToken, 'appVer': a.appVer } )
     })
     .done(function(data) {
       if (data.login !== undefined) {
@@ -70,7 +70,7 @@ $(function() {
       type: 'post',
       dataType: 'json',
       cache: false,
-      data: JSON.stringify( { 'accessToken': a.creds.accessToken, 'appver': a.appver, number: a.state.number } )
+      data: JSON.stringify( { 'accessToken': a.creds.accessToken, 'appVer': a.appVer, number: a.state.number } )
     })
     .done(function(data) {
       if (data.login !== undefined) {

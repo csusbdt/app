@@ -12,11 +12,11 @@ exports.setNumRequests = 0;
 exports.unknownOps     = 0;
 
 function checkVersion(data, res, cb) {
-  if (data.appver === undefined) {
-    logger.warning('appver missing from ajax request', __filename);
+  if (data.appVer === undefined) {
+    logger.warning('appVer missing from ajax request', __filename);
     return app_ajax.error(res);
   }
-  if (data.appver != process.env.APP_VER) {
+  if (data.appVer != process.env.APP_VER) {
     return app_ajax.badVersion(res);
   }
   return cb();
