@@ -3,7 +3,9 @@ var fs       = require('fs');
 var zlib     = require('zlib');
 var app_http = require('./app_http');
 
-var plainHtml, gzippedHtml, etag;
+var plainHtml;
+var gzippedHtml;
+var etag;
 var dir = 'app_screens';
 
 exports.handle = function(req, res) {

@@ -38,7 +38,7 @@ function route(req, res) {
   else                                                              app_http.redirect(res, '/');
 }
 
-function requestHandler(req, res) {
+function handle(req, res) {
   // Make sure messages are sent over https when deployed through Heroku.
   // See https://devcenter.heroku.com/articles/http-routing
   if (req.headers['x-forwarded-proto'] === 'https' ||    // common case
@@ -51,7 +51,7 @@ function requestHandler(req, res) {
 }
 
 exports.start = function() {
-  http.createServer(requestHandler).listen(process.env.PORT, function(err) {
+  http.createServer(handle).listen(process.env.PORT, function(err) {
     if (err) throw err;
     else logger.info("listening on " + process.env.PORT);
   });

@@ -1,8 +1,9 @@
 var app_http = require('./app_http');
 
-var html = new Buffer('<script>location.replace("/' + process.env.APP_VER + '/");</script>', 'utf8');
+var html = '<script>location.replace("/' + process.env.APP_VER + '/");</script>';
+var buf = new Buffer(html, 'utf8');
 
 exports.handle = function(req, res) {
-  app_http.replyNotCached(res, html);
+  app_http.replyNotCached(res, buf);
 };
 

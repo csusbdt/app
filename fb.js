@@ -176,6 +176,10 @@ exports.getUid = function(userAccessToken, cb) {
 };
 
 
+/*************************************************************
+
+NOT USED
+
 // Exchange a short-lived access token for a long-lived one,
 // which we call a secret.
 exports.exchangeAccessToken = function(accessToken, cb) {
@@ -206,3 +210,7 @@ exports.exchangeAccessToken = function(accessToken, cb) {
     });
   });
 };
+
+******************************************************************/
+
+

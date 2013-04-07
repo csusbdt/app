@@ -54,7 +54,7 @@ HTML document.  This javascript is spread out across the files in _app_screens_.
 ## Authentication
 
 To use the application, the user must be authenticated with Facebook and have
-authorizaed the app to access the user's basic information.
+authorized the app to access the user's basic information.
 
 The Facebook library calls global function _fbAsyncInit_ after it is done loading.  
 The application's script also calls _fbAsyncInit_, which it does on jQuery's ready event.
@@ -126,6 +126,30 @@ browser and Facebook, app server and Facebook.
 I don't believe communciation between app server on Heroku and database 
 on MongoLab is encrypted.  They are both running in Amazon's East Coast data center,
 so maybe it's not too much of a weakness.
+
+Data from the outside enters the app in the following places.
+
+- _router.handle_ The HTTP header _x-forwarded-proto_ is used in string comparison.
+- _router.route_ The request URL is parsed using Node's _url.parse_ function and
+  then used in string comparison.
+- _req_app.handle_ HTTP headers are used in string comparison.
+- _req_file.handle_ HTTP headers are used in string comparisons.
+  The request URL is parsed using Node's _url.parse_ function and a filename is
+  extracted from it.  This filename string is used only in string comparisons 
+  (to perform a binary search through an array of objects comprising the
+  static content of the app.)
+  A file extension is extracted from the filename as a substring and used as
+  a property of an object that contains information about handling the content
+  type represented by the extension.
+- _req_op.handle_ A Javascript object is extracted from the body of an HTTP request
+  using Node's JSON.parse fucntion. Properties of this object are used in
+  string comprisons.  The request URL is parsed using Node's _url.parse_ function and
+  then used in string comparisons.
+- _fb_ A string from the outside assumed to be the user's Facebook access token is passed
+  into Facebook open graph service through its _debug_token_ operation along
+  with the secret app token.
+  I think this is safe, but I should think about what harm could be done as an app
+  authenticated through the app token.
 
 TODO: check for injection attacks at each place where data comes into 
 the server.
