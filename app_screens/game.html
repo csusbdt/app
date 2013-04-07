@@ -43,11 +43,13 @@ $(function() {
       type: 'post',
       dataType: 'json',
       cache: false,
-      data: JSON.stringify( { 'accessToken': a.creds.accessToken } )
+      data: JSON.stringify( { 'accessToken': a.creds.accessToken, 'appver': a.appver } )
     })
     .done(function(data) {
       if (data.login !== undefined) {
         a.relogin(function() { initPage(); });
+      } else if (data.badVersion !== undefined) {
+        $('#game-num').html('Number can not be saved.  App version changed.  Please reload.');
       } else if (data.error !== undefined) {
         $('#game-num').html(data.error);
       } else {
@@ -68,11 +70,13 @@ $(function() {
       type: 'post',
       dataType: 'json',
       cache: false,
-      data: JSON.stringify( { 'accessToken': a.creds.accessToken, number: a.state.number } )
+      data: JSON.stringify( { 'accessToken': a.creds.accessToken, 'appver': a.appver, number: a.state.number } )
     })
     .done(function(data) {
       if (data.login !== undefined) {
         a.relogin(function() { $saveBtn.click(); });
+      } else if (data.badVersion !== undefined) {
+        $('#game-num').html('Number can not be saved.  App version changed.  Please reload.');
       } else if (data.error !== undefined) {
         $('#game-num').html(data.error);
       } else {

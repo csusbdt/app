@@ -1,4 +1,4 @@
-window.a = { state:{}, creds:{}, menu:{}, screens:{} };
+window.a = { state:{}, creds:{}, menu:{}, screens:{}, appver: 'APP_VER' };
 
 $(function() {
  

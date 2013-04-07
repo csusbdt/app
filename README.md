@@ -1,22 +1,34 @@
 Approach
 ========
 
+## Caching strategy
+
+Browser requests for '/' are served with a small HTML file that simply loads
+the current version, such as '/123/', assuming for the sake of explanation
+that the current version is 123.  HTTP headers tell the browser not to cache '/' but
+cache '/123/' and all resources under it for a year.  
+
+If a request comes in for '/something/' where something is not 123, then the server
+returns an HTTP permanently moved message to the browser, pointing to '/123/'.
+
+One problem with the above mechanism is that the app has no way of telling the browser 
+to remove old content from its cache. An alternative that does not have this problem is
+to store content in local storage.
+
+## Intitialization
+
 When the server starts, main checks for enviroinmental variables and starts initialization process.
 
-The first request from browser should be for root.  The req_root module handles this;
-it returns a tiny web page that reloads the browser window with __/ver/__, where __ver__ refers 
-to a version string.
+All static content is read into memory at startup.  Character data is compressed using
+gzip and kept in memory.  
 
-This tiny root web page is not cached; the response to __/ver/__ is cached.
-When new versions of the app are released, __ver__ is changed to avoid stale content.
+There are no accesses to the hard disk after initialization;
+all requests are handled by returning objects stored in memory or data retrieved from
+the database.
 
 The req_app module handles requests for __/ver/__. At server start up, req_app reads
 __app.html__ and replaces __FB_APP_ID__ with the application's Facebook app id as
 provided through an environmental variable by the same name.
-
-One problem with the above mechanism is that the app has no way of telling the browser 
-to remove old content from its cache. An alternative that does not have this problem is
-to store content in localstorage.
 
 app.html is the screen container.  The initial screen is a temporary loading screen,
 which is replaced with a login screen or a title screen.
@@ -46,7 +58,6 @@ Developer Setup
 - Install git.
 - Install Node.js.
 - Install MongoDB.
-- Have a Github account.
 - Have a Facebook account.
 - Have a Heroku account and install the Heroku toolbelt.
 - Have a MongoLab account.
@@ -97,6 +108,5 @@ in the Heroku environment you deploy into.  Use the following commands.
     heroku config --app <app-name>    // lists the current environmental variables
     heroku config:set FB_APP_ID=12341234 -- app <app-name> 
     heroku config:set MONGO_URI=thisisauri -- app <app-name>   
-
 
 

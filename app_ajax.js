@@ -71,3 +71,8 @@ exports.login = function(res) {
   exports.reply(res, { login: true });
 };
 
+// Tell client to request different version.
+exports.badVersion = function(res) {
+  exports.reply(res, { badVersion: true });
+};
+

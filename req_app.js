@@ -35,6 +35,7 @@ exports.init = function(cb) {
     container = container.replace(/SCREENS/, about + loading + login + title + game + friends);
     container = container.replace(/APP_JS/,  appJs); 
     container = container.replace(/FB_JS/,   fbJs);
+    container = container.replace(/APP_VER/g,  process.env.APP_VER); 
     plainHtml = new Buffer(container, 'utf8');
     etag = app_http.etag(plainHtml);
     zlib.gzip(plainHtml, function(err, result) {
